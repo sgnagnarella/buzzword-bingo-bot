@@ -32,6 +32,7 @@ export async function savePrompt(promptText: string): Promise<void> {
             createdAt: new Date(),
         });
     }
+    return;
   } catch (error) {
     console.error("Error saving prompt: ", error);
   }
