@@ -30,17 +30,13 @@ export async function savePrompt(promptAndResponse: PromptAndResponse): Promise<
     }
 
   try {
-    const q = query(collection(db, "prompts"), where("text", "==", promptAndResponse.text), limit(1));
-    const querySnapshot = await getDocs(q);
-    
-    if (querySnapshot.empty) {
-        await addDoc(collection(db, "prompts"), {
-            text: promptAndResponse.text,
-            response: promptAndResponse.response,
-            createdAt: serverTimestamp(),
-        });
-    }
-    return;
+    // To avoid complex Firestore indexing, we'll save the prompt without checking for duplicates.
+    // The UI will handle displaying the latest version.
+    await addDoc(collection(db, "prompts"), {
+        text: promptAndResponse.text,
+        response: promptAndResponse.response,
+        createdAt: serverTimestamp(),
+    });
   } catch (error) {
     console.error("Error saving prompt: ", error);
   }
