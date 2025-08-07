@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/lib/firebase";
-import { collection, getDocs, addDoc, query, where, limit, orderBy } from "firebase/firestore";
+import { collection, getDocs, addDoc, query, where, limit, orderBy, serverTimestamp } from "firebase/firestore";
 
 export interface PromptAndResponse {
   text: string;
@@ -35,8 +35,9 @@ export async function savePrompt(promptAndResponse: PromptAndResponse): Promise<
     
     if (querySnapshot.empty) {
         await addDoc(collection(db, "prompts"), {
-            ...promptAndResponse,
-            createdAt: new Date(),
+            text: promptAndResponse.text,
+            response: promptAndResponse.response,
+            createdAt: serverTimestamp(),
         });
     }
     return;

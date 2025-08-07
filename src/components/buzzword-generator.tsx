@@ -47,7 +47,6 @@ export function BuzzwordGenerator() {
 
       if (prompt.trim() !== '' && !storedPrompts.some(p => p.text === prompt)) {
         const newEntry = { text: prompt, response: newResponse };
-        // Don't wait for the save to complete to avoid UI hanging
         savePrompt(newEntry);
         setStoredPrompts(prev => [newEntry, ...prev]);
       }
