@@ -2,13 +2,13 @@ import { initializeApp, getApp, getApps } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  "projectId": "buzzword-bingo-bot",
-  "appId": "1:714642100866:web:543124108f5f6bcf9f1a9b",
-  "storageBucket": "buzzword-bingo-bot.firebasestorage.app",
-  "apiKey": "AIzaSyCr02_se8j2bCB9J-L1ObYz94WOhK-0WdE",
-  "authDomain": "buzzword-bingo-bot.firebaseapp.com",
-  "measurementId": "",
-  "messagingSenderId": "714642100866"
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
