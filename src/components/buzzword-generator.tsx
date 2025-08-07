@@ -9,7 +9,7 @@ import { Loader2 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Terminal } from 'lucide-react';
-import { getPrompts, savePrompt } from '@/services/prompt-service';
+import { getPrompts, savePrompt, type PromptAndResponse } from '@/services/prompt-service';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 export function BuzzwordGenerator() {
@@ -17,7 +17,7 @@ export function BuzzwordGenerator() {
   const [response, setResponse] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [storedPrompts, setStoredPrompts] = useState<string[]>([]);
+  const [storedPrompts, setStoredPrompts] = useState<PromptAndResponse[]>([]);
   const [isLoadingPrompts, setIsLoadingPrompts] = useState(true);
 
   useEffect(() => {
@@ -29,6 +29,12 @@ export function BuzzwordGenerator() {
     };
     fetchPrompts();
   }, []);
+  
+  const handleSelectPrompt = (p: PromptAndResponse) => {
+    setPrompt(p.text);
+    setResponse(p.response);
+    setError(null);
+  }
 
   const handleGenerate = async () => {
     setIsLoading(true);
@@ -36,11 +42,14 @@ export function BuzzwordGenerator() {
     setError(null);
     try {
       const result = await generateBuzzwordResponse({ prompt });
-      setResponse(result.response);
-      if (prompt.trim() !== '' && !storedPrompts.includes(prompt)) {
+      const newResponse = result.response;
+      setResponse(newResponse);
+
+      if (prompt.trim() !== '' && !storedPrompts.some(p => p.text === prompt)) {
+        const newEntry = { text: prompt, response: newResponse };
         // Don't wait for the save to complete to avoid UI hanging
-        savePrompt(prompt);
-        setStoredPrompts(prev => [...prev, prompt]);
+        savePrompt(newEntry);
+        setStoredPrompts(prev => [newEntry, ...prev]);
       }
     } catch (e) {
       console.error("Error generating response:", e);
@@ -131,8 +140,8 @@ export function BuzzwordGenerator() {
             ) : storedPrompts.length > 0 ? (
                 <div className="flex flex-col gap-2">
                     {storedPrompts.map((p, i) => (
-                        <Button key={i} variant="outline" className="w-full justify-start text-left h-auto" onClick={() => setPrompt(p)}>
-                            {p}
+                        <Button key={i} variant="outline" className="w-full justify-start text-left h-auto" onClick={() => handleSelectPrompt(p)}>
+                            {p.text}
                         </Button>
                     ))}
                 </div>

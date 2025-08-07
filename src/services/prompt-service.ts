@@ -1,14 +1,21 @@
 "use server";
 
 import { db } from "@/lib/firebase";
-import { collection, getDocs, addDoc, query, where, limit } from "firebase/firestore";
+import { collection, getDocs, addDoc, query, where, limit, orderBy } from "firebase/firestore";
 
-export async function getPrompts(): Promise<string[]> {
+export interface PromptAndResponse {
+  text: string;
+  response: string;
+}
+
+export async function getPrompts(): Promise<PromptAndResponse[]> {
   try {
-    const querySnapshot = await getDocs(collection(db, "prompts"));
-    const prompts: string[] = [];
+    const q = query(collection(db, "prompts"), orderBy("createdAt", "desc"));
+    const querySnapshot = await getDocs(q);
+    const prompts: PromptAndResponse[] = [];
     querySnapshot.forEach((doc) => {
-      prompts.push(doc.data().text);
+      const data = doc.data();
+      prompts.push({ text: data.text, response: data.response });
     });
     return prompts;
   } catch (error) {
@@ -17,18 +24,18 @@ export async function getPrompts(): Promise<string[]> {
   }
 }
 
-export async function savePrompt(promptText: string): Promise<void> {
-    if (!promptText || promptText.trim() === '') {
+export async function savePrompt(promptAndResponse: PromptAndResponse): Promise<void> {
+    if (!promptAndResponse.text || promptAndResponse.text.trim() === '') {
         return;
     }
 
   try {
-    const q = query(collection(db, "prompts"), where("text", "==", promptText), limit(1));
+    const q = query(collection(db, "prompts"), where("text", "==", promptAndResponse.text), limit(1));
     const querySnapshot = await getDocs(q);
     
     if (querySnapshot.empty) {
         await addDoc(collection(db, "prompts"), {
-            text: promptText,
+            ...promptAndResponse,
             createdAt: new Date(),
         });
     }
