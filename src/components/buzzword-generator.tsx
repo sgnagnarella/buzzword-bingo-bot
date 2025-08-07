@@ -38,7 +38,8 @@ export function BuzzwordGenerator() {
       const result = await generateBuzzwordResponse({ prompt });
       setResponse(result.response);
       if (prompt.trim() !== '' && !storedPrompts.includes(prompt)) {
-        await savePrompt(prompt);
+        // Don't wait for the save to complete to avoid UI hanging
+        savePrompt(prompt);
         setStoredPrompts(prev => [...prev, prompt]);
       }
     } catch (e) {
