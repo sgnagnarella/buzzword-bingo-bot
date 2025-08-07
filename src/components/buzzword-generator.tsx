@@ -45,9 +45,11 @@ export function BuzzwordGenerator() {
       const newResponse = result.response;
       setResponse(newResponse);
 
-      if (prompt.trim() !== '' && !storedPrompts.some(p => p.text === prompt)) {
+      if (prompt.trim() !== '') {
         const newEntry = { text: prompt, response: newResponse };
+        // No need to await, let it save in the background
         savePrompt(newEntry);
+        // Add the new entry to the top of the list for immediate UI update
         setStoredPrompts(prev => [newEntry, ...prev]);
       }
     } catch (e) {
