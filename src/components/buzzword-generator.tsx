@@ -54,7 +54,7 @@ export function BuzzwordGenerator() {
       }
     } catch (e) {
       console.error("Error generating response:", e);
-      setError("An error occurred while synergizing your request. Please recalibrate and try again.");
+      setError("An error occurred while synergizing your request. Please recalibrate and try again later.");
     } finally {
       setIsLoading(false);
     }
